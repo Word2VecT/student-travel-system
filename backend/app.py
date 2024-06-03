@@ -1,13 +1,20 @@
+import os
+
 from config import Config
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, send_from_directory
 from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
+from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
 app.config.from_object(Config)
 CORS(app)  # 允许所有域名的所有请求
 
 db = SQLAlchemy(app)
+
+UPLOAD_FOLDER = "/Users/tang/Pictures/travel"
+ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg", "gif"}
+app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 
 
 class User(db.Model):
@@ -225,5 +232,35 @@ def rate_travel_note(id):
     return jsonify({"success": False, "message": "无效的评分"})
 
 
+def allowed_file(filename):
+    return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
+
+
+@app.route("/upload", methods=["POST"])
+def upload():
+    if "uploadedImage" not in request.files:
+        return jsonify({"errno": 1, "message": "没有找到文件"})
+
+    file = request.files["uploadedImage"]
+    if file.filename == "":
+        return jsonify({"errno": 1, "message": "没有选择文件"})
+
+    if file and allowed_file(file.filename):
+        filename = secure_filename(file.filename)
+        file.save(os.path.join(app.config["UPLOAD_FOLDER"], filename))
+        return jsonify(
+            {"errno": 0, "data": {"url": f"http://127.0.0.1:5000/uploads/{filename}"}}
+        )
+
+    return jsonify({"errno": 1, "errmsg": "File not allowed"})
+
+
+@app.route("/uploads/<filename>")
+def uploaded_file(filename):
+    return send_from_directory(app.config["UPLOAD_FOLDER"], filename)
+
+
 if __name__ == "__main__":
+    if not os.path.exists(UPLOAD_FOLDER):
+        os.makedirs(UPLOAD_FOLDER)
     app.run(debug=True)

@@ -3,13 +3,27 @@
         <h1 class="title">{{ destination.name }}</h1>
         <v-card class="info-card">
             <v-card-text>
-                <div class="info-item">热度: {{ destination.popularity }}</div>
-                <div class="info-item">评分: {{ (destination.rating * 100).toFixed(2) }}</div>
-                <div class="info-item">价格: {{ destination.price }}<span>元</span></div>
-                <div class="info-item">地址: {{ destination.address }}</div>
-                <div class="description">{{ destination.description }}</div>
+                <div class="info-container">
+                    <div class="info-details">
+                        <div class="info-item">热度: {{ destination.popularity }}</div>
+                        <div class="info-item">评分: {{ (destination.rating * 100).toFixed(2) }}</div>
+                        <div class="info-item">价格: {{ destination.price }}<span>元</span></div>
+                        <div class="info-item">地址: {{ destination.address }}</div>
+                        <div class="description">{{ destination.description }}</div>
+                    </div>
+                    <div class="map-container">
+                        <v-btn @click="navigateToTravel" class="map-btn" icon>
+                            <v-icon size="48" class="center-icon">mdi-map-marker</v-icon>
+                        </v-btn>
+                        <div class="map-text">开始游学</div>
+                    </div>
+                </div>
             </v-card-text>
         </v-card>
+
+        <v-btn @click="navigateToHome" class="back-btn" icon>
+            <v-icon>mdi-arrow-left</v-icon>
+        </v-btn>
 
         <h2 class="sub-title">浏览游记</h2>
         <v-text-field v-model="searchQuery" label="搜索游记" clearable @input="fetchTravelNotes"></v-text-field>
@@ -80,7 +94,49 @@ export default {
         const editorRef = shallowRef(null);
         const valueHtml = ref('');
         const toolbarConfig = {};
-        const editorConfig = { placeholder: '请输入游记内容...' };
+        const editorConfig = {
+            placeholder: '请输入游记内容...',
+            MENU_CONF: {
+                uploadImage: {
+                    fieldName: 'uploadedImage',
+                    maxFileSize: 10 * 1024 * 1024, // 10M
+                    maxNumberOfFiles: 10,
+                    allowedFileTypes: ['image/*'],
+
+                    meta: { token: 'xxx', a: 100 },
+                    metaWithUrl: true, // 参数拼接到 url 上
+                    headers: { Accept: 'text/x-json' },
+
+                    timeout: 5 * 1000, // 5 秒
+                    server: 'http://127.0.0.1:5000/upload', // 上传图片的服务器地址
+                    onBeforeUpload(file) {
+                        console.log('onBeforeUpload', file);
+                        return file;
+                    },
+                    onProgress(progress) {
+                        console.log('onProgress', progress);
+                    },
+                    onSuccess(file, res) {
+                        console.log('onSuccess', file, res);
+                        if (res.errno === 0) {
+                            // 将图片 URL 插入编辑器
+                            const imageUrl = res.data.url;
+                            editorRef.value.insertImage(imageUrl, '', '');
+                        } else {
+                            alert('上传失败');
+                        }
+                    },
+                    onFailed(file, res) {
+                        console.log('onFailed', file, res);
+                        alert(`${file.name} 上传失败`);
+                    },
+                    onError(file, err, res) {
+                        console.log('onError', file, err, res);
+                        alert(`${file.name} 上传出错`);
+                    },
+                }
+            }
+        };
 
         onMounted(() => {
             setTimeout(() => {
@@ -235,6 +291,13 @@ export default {
                     }
                 });
         },
+        navigateToHome() {
+            this.$router.push('/home');
+        },
+        navigateToTravel() {
+            const id = this.$route.params.id;
+            this.$router.push(`/travel/${id}`);
+        },
     },
     watch: {
         sortBy() {
@@ -353,5 +416,56 @@ export default {
 
 .sort-select {
     margin-bottom: 10px;
+}
+
+.back-btn {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: #1976D2;
+    color: white;
+    border-radius: 50%;
+}
+
+.info-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.info-details {
+    flex-grow: 1;
+}
+
+.map-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-left: 20px;
+}
+
+.map-btn {
+    margin-right: 50px;
+    background-color: #1976D2;
+    color: white;
+    width: 90px;
+    height: 90px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 50%;
+}
+
+.map-text {
+    color: #1976D2;
+    font-weight: bold;
+    margin-right: 50px;
+    margin-top: 8px;
+    font-size: 20px;
+    text-align: center;
+}
+
+.center-icon {
+    margin: 0;
 }
 </style>
