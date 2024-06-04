@@ -9,17 +9,12 @@
   "dependencies": {
     "@amap/amap-jsapi-loader": "^1.0.1",
     "@mdi/font": "7.0.96",
-    "@tinymce/tinymce-vue": "3",
     "@vueup/vue-quill": "^1.2.0",
     "@wangeditor/editor": "^5.1.23",
     "@wangeditor/editor-for-vue": "^5.1.12",
-    "quill": "^2.0.2",
     "roboto-fontface": "*",
-    "tinymce": "^7.1.1",
     "vue": "^3.4.0",
-    "vue-quill": "^1.5.1",
     "vue-router": "^4.0.13",
-    "vue3-quill": "^0.3.1",
     "vuetify": "^3.5.0"
   },
   "devDependencies": {

@@ -1,12 +1,10 @@
 import { createRouter, createWebHistory } from 'vue-router';
-import Detail from './components/Detail.vue';
-import Home from './components/Home.vue';
-import LoginRegister from './components/LoginRegister.vue';
 
 const routes = [
-    { path: '/', component: LoginRegister },
-    { path: '/home', component: Home },
-    { path: '/detail/:id', component: Detail },
+    { path: '/', component: () => import('./components/LoginRegister.vue') },
+    { path: '/home', component: () => import('./components/Home.vue') },
+    { path: '/detail/:id', component: () => import('./components/Detail.vue') },
+    { path: '/travel/:id', component: () => import('./components/Travel.vue') },
 ];
 
 const router = createRouter({

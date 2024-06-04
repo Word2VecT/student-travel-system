@@ -1,5 +1,6 @@
 import os
 
+import networkx as nx
 from config import Config
 from flask import Flask, jsonify, request, send_from_directory
 from flask_cors import CORS
@@ -258,6 +259,31 @@ def upload():
 @app.route("/uploads/<filename>")
 def uploaded_file(filename):
     return send_from_directory(app.config["UPLOAD_FOLDER"], filename)
+
+
+@app.route("/calculate-route", methods=["POST"])
+def calculate_route():
+    data = request.get_json()
+    length = int(data["length"])
+    cost = [[int(x) for x in sublist] for sublist in data["cost"]]
+
+    G = nx.DiGraph()
+
+    for i in range(length):
+        for j in range(length):
+            if i != j:  # 避免自环
+                G.add_edge(i, j, weight=cost[i][j])
+
+    # 使用networkx的近似算法求解TSP，指定起点
+    tsp_path = nx.approximation.traveling_salesman_problem(G, cycle=False)
+
+    if 0 in tsp_path:
+        zero_index = tsp_path.index(0)
+        tsp_path = tsp_path[zero_index:] + tsp_path[:zero_index]
+
+    tsp_path.append(0)
+
+    return jsonify({"path": tsp_path})
 
 
 if __name__ == "__main__":
