@@ -5,15 +5,27 @@
             <v-card-text>
                 <div class="info-container">
                     <div class="info-details">
-                        <div class="info-item">热度: {{ destination.popularity }}</div>
-                        <div class="info-item">评分: {{ (destination.rating * 100).toFixed(2) }}</div>
-                        <div class="info-item">价格: {{ destination.price }}<span>元</span></div>
-                        <div class="info-item">地址: {{ destination.address }}</div>
-                        <div class="description">{{ destination.description }}</div>
+                        <div class="info-item">
+                            热度: {{ destination.popularity }}
+                        </div>
+                        <div class="info-item">
+                            评分: {{ (destination.rating * 100).toFixed(2) }}
+                        </div>
+                        <div class="info-item">
+                            价格: {{ destination.price }}<span>元</span>
+                        </div>
+                        <div class="info-item">
+                            地址: {{ destination.address }}
+                        </div>
+                        <div class="description">
+                            {{ destination.description }}
+                        </div>
                     </div>
                     <div class="map-container">
                         <v-btn @click="navigateToTravel" class="map-btn" icon>
-                            <v-icon size="48" class="center-icon">mdi-map-marker</v-icon>
+                            <v-icon size="48" class="center-icon"
+                                >mdi-map-marker</v-icon
+                            >
                         </v-btn>
                         <div class="map-text">开始游学</div>
                     </div>
@@ -25,38 +37,111 @@
             <v-icon>mdi-arrow-left</v-icon>
         </v-btn>
 
+        <h2 class="sub-title">相似景点</h2>
+        <v-row>
+            <v-col
+                v-for="similar in similarDestinations"
+                :key="similar.id"
+                cols="12"
+                md="4"
+            >
+                <v-card class="similar-card">
+                    <v-card-title>{{ similar.name }}</v-card-title>
+                    <v-card-subtitle
+                        >热度: {{ similar.popularity }}</v-card-subtitle
+                    >
+                    <v-card-subtitle
+                        >评分:
+                        {{ (similar.rating * 100).toFixed(2) }}</v-card-subtitle
+                    >
+                    <v-card-subtitle
+                        >价格: {{ similar.price }} 元</v-card-subtitle
+                    >
+                    <v-card-subtitle
+                        >地址: {{ similar.address }}</v-card-subtitle
+                    >
+                    <v-card-text>{{ similar.description }}</v-card-text>
+                </v-card>
+            </v-col>
+        </v-row>
+
         <h2 class="sub-title">浏览游记</h2>
-        <v-text-field v-model="searchQuery" label="搜索游记" clearable @input="fetchTravelNotes"></v-text-field>
-        <v-select v-model="sortBy" :items="sortOptions" label="排序方式" class="sort-select"
-            @change="fetchTravelNotes"></v-select>
+        <v-text-field
+            v-model="searchQuery"
+            label="搜索游记"
+            clearable
+            @input="fetchTravelNotes"
+        ></v-text-field>
+        <v-select
+            v-model="sortBy"
+            :items="sortOptions"
+            label="排序方式"
+            class="sort-select"
+            @change="fetchTravelNotes"
+        ></v-select>
         <div class="notes-container">
             <v-row>
                 <v-col v-if="travelNotes.length === 0" cols="12">
                     <p class="no-notes">还没有游记，快来写一篇吧！</p>
                 </v-col>
-                <v-col v-else v-for="note in travelNotes" :key="note.id" cols="12" md="6">
+                <v-col
+                    v-else
+                    v-for="note in travelNotes"
+                    :key="note.id"
+                    cols="12"
+                    md="6"
+                >
                     <v-card class="note-card">
                         <v-card-title>
                             <div>{{ note.title }}</div>
                             <span class="author">by {{ note.username }}</span>
-                            <v-btn icon @click="toggleFullNote(note)" class="toggle-button">
-                                <v-icon>{{ note.showFull ? 'mdi-chevron-up' : 'mdi-chevron-down' }}</v-icon>
+                            <v-btn
+                                icon
+                                @click="toggleFullNote(note)"
+                                class="toggle-button"
+                            >
+                                <v-icon>{{
+                                    note.showFull
+                                        ? "mdi-chevron-up"
+                                        : "mdi-chevron-down"
+                                }}</v-icon>
                             </v-btn>
                         </v-card-title>
-                        <v-divider :style="{ 'border-color': '#BBBBBB' }"></v-divider>
+                        <v-divider
+                            :style="{ 'border-color': '#BBBBBB' }"
+                        ></v-divider>
                         <v-card-text>
                             <div class="info-row">
-                                <div class="info-item">浏览量: {{ note.views }}</div>
-                                <div class="info-item">评分: {{ note.rating.toFixed(2) }}</div>
+                                <div class="info-item">
+                                    浏览量: {{ note.views }}
+                                </div>
+                                <div class="info-item">
+                                    评分: {{ note.rating.toFixed(2) }}
+                                </div>
                             </div>
-                            <div v-html="note.content" class="note-content" :class="{ 'full-note': note.showFull }">
-                            </div>
-                            <v-divider v-if="note.showFull" :style="{ 'border-color': '#BBBBBB' }"></v-divider>
+                            <div
+                                v-html="note.content"
+                                class="note-content"
+                                :class="{ 'full-note': note.showFull }"
+                            ></div>
+                            <v-divider
+                                v-if="note.showFull"
+                                :style="{ 'border-color': '#BBBBBB' }"
+                            ></v-divider>
                             <div v-if="note.showFull" class="rate-section">
                                 <div class="rate-text">为该游记评分</div>
-                                <v-rating v-model="note.newRating" half-increments hover @click="submitRating(note)"
-                                    :length="5" color="black" background-color="grey lighten-1"
-                                    empty-icon="mdi-star-outline" half-icon="mdi-star-half-full" full-icon="mdi-star" />
+                                <v-rating
+                                    v-model="note.newRating"
+                                    half-increments
+                                    hover
+                                    @click="submitRating(note)"
+                                    :length="5"
+                                    color="black"
+                                    background-color="grey lighten-1"
+                                    empty-icon="mdi-star-outline"
+                                    half-icon="mdi-star-half-full"
+                                    full-icon="mdi-star"
+                                />
                             </div>
                         </v-card-text>
                     </v-card>
@@ -67,80 +152,114 @@
         <h2 class="sub-title">写游记</h2>
         <v-card class="editor-card">
             <v-card-text>
-                <v-text-field v-model="noteTitle" label="文章名称" required></v-text-field>
-                <div style="border: 1px solid #ccc; margin-top: 10px;">
-                    <Toolbar :editor="editorRef" :defaultConfig="toolbarConfig" :mode="mode"
-                        style="border-bottom: 1px solid #ccc" />
-                    <Editor :defaultConfig="editorConfig" :mode="mode" v-model="valueHtml"
-                        style="height: 400px; overflow-y: hidden;" @onCreated="handleCreated" @onChange="handleChange"
-                        @onDestroyed="handleDestroyed" @onFocus="handleFocus" @onBlur="handleBlur"
-                        @customAlert="customAlert" @customPaste="customPaste" />
+                <v-text-field
+                    v-model="noteTitle"
+                    label="文章名称"
+                    required
+                ></v-text-field>
+                <div style="border: 1px solid #ccc; margin-top: 10px">
+                    <Toolbar
+                        :editor="editorRef"
+                        :defaultConfig="toolbarConfig"
+                        :mode="mode"
+                        style="border-bottom: 1px solid #ccc"
+                    />
+                    <Editor
+                        :defaultConfig="editorConfig"
+                        :mode="mode"
+                        v-model="valueHtml"
+                        style="height: 400px; overflow-y: hidden"
+                        @onCreated="handleCreated"
+                        @onChange="handleChange"
+                        @onDestroyed="handleDestroyed"
+                        @onFocus="handleFocus"
+                        @onBlur="handleBlur"
+                        @customAlert="customAlert"
+                        @customPaste="customPaste"
+                    />
                 </div>
-                <v-btn color="primary" @click="submitTravelNote" class="submit-btn">发布游记</v-btn>
+                <v-btn
+                    color="primary"
+                    @click="generateImage"
+                    class="generate-btn"
+                    >AIGC生成图片</v-btn
+                >
+                <v-btn
+                    color="primary"
+                    @click="generateVideo"
+                    class="generate-btn"
+                    >AIGC生成视频</v-btn
+                >
+                <v-btn
+                    color="primary"
+                    @click="submitTravelNote"
+                    class="submit-btn"
+                    >发布游记</v-btn
+                >
             </v-card-text>
         </v-card>
     </v-container>
 </template>
 
 <script>
-import '@wangeditor/editor/dist/css/style.css';
-import { onBeforeUnmount, ref, shallowRef, onMounted } from 'vue';
-import { Editor, Toolbar } from '@wangeditor/editor-for-vue';
-import { VRating } from 'vuetify/components/VRating';
+import "@wangeditor/editor/dist/css/style.css";
+import { onBeforeUnmount, ref, shallowRef, onMounted } from "vue";
+import { Editor, Toolbar } from "@wangeditor/editor-for-vue";
+import { VRating } from "vuetify/components/VRating";
 
 export default {
     components: { Editor, Toolbar, VRating },
     setup() {
         const editorRef = shallowRef(null);
-        const valueHtml = ref('');
+        const valueHtml = ref("");
         const toolbarConfig = {};
         const editorConfig = {
-            placeholder: '请输入游记内容...',
+            placeholder: "请输入游记内容...",
             MENU_CONF: {
                 uploadImage: {
-                    fieldName: 'uploadedImage',
+                    fieldName: "uploadedImage",
                     maxFileSize: 10 * 1024 * 1024, // 10M
                     maxNumberOfFiles: 10,
-                    allowedFileTypes: ['image/*'],
+                    allowedFileTypes: ["image/*"],
 
-                    meta: { token: 'xxx', a: 100 },
+                    meta: { token: "xxx", a: 100 },
                     metaWithUrl: true, // 参数拼接到 url 上
-                    headers: { Accept: 'text/x-json' },
+                    headers: { Accept: "text/x-json" },
 
                     timeout: 5 * 1000, // 5 秒
-                    server: 'http://127.0.0.1:5000/upload', // 上传图片的服务器地址
+                    server: "http://127.0.0.1:5000/upload", // 上传图片的服务器地址
                     onBeforeUpload(file) {
-                        console.log('onBeforeUpload', file);
+                        console.log("onBeforeUpload", file);
                         return file;
                     },
                     onProgress(progress) {
-                        console.log('onProgress', progress);
+                        console.log("onProgress", progress);
                     },
                     onSuccess(file, res) {
-                        console.log('onSuccess', file, res);
+                        console.log("onSuccess", file, res);
                         if (res.errno === 0) {
                             // 将图片 URL 插入编辑器
                             const imageUrl = res.data.url;
-                            editorRef.value.insertImage(imageUrl, '', '');
+                            editorRef.value.insertImage(imageUrl, "", "");
                         } else {
-                            alert('上传失败');
+                            alert("上传失败");
                         }
                     },
                     onFailed(file, res) {
-                        console.log('onFailed', file, res);
+                        console.log("onFailed", file, res);
                         alert(`${file.name} 上传失败`);
                     },
                     onError(file, err, res) {
-                        console.log('onError', file, err, res);
+                        console.log("onError", file, err, res);
                         alert(`${file.name} 上传出错`);
                     },
-                }
-            }
+                },
+            },
         };
 
         onMounted(() => {
             setTimeout(() => {
-                valueHtml.value = '';
+                valueHtml.value = "";
             }, 1500);
         });
 
@@ -158,27 +277,27 @@ export default {
             valueHtml.value = editor.getHtml();
         };
         const handleDestroyed = (editor) => {
-            console.log('destroyed', editor);
+            console.log("destroyed", editor);
         };
         const handleFocus = (editor) => {
-            console.log('focus', editor);
+            console.log("focus", editor);
         };
         const handleBlur = (editor) => {
-            console.log('blur', editor);
+            console.log("blur", editor);
         };
         const customAlert = (info, type) => {
             alert(`【自定义提示】${type} - ${info}`);
         };
         const customPaste = (editor, event, callback) => {
-            console.log('ClipboardEvent 粘贴事件对象', event);
-            editor.insertText('xxx');
+            console.log("ClipboardEvent 粘贴事件对象", event);
+            editor.insertText("xxx");
             callback(false);
         };
 
         const insertText = () => {
             const editor = editorRef.value;
             if (editor == null) return;
-            editor.insertText('hello world');
+            editor.insertText("hello world");
         };
 
         const printHtml = () => {
@@ -195,7 +314,7 @@ export default {
 
         return {
             editorRef,
-            mode: 'default',
+            mode: "default",
             valueHtml,
             toolbarConfig,
             editorConfig,
@@ -215,22 +334,23 @@ export default {
         return {
             destination: {},
             travelNotes: [],
-            noteTitle: '',
-            sortBy: '浏览量',
-            searchQuery: ''
+            noteTitle: "",
+            sortBy: "浏览量",
+            searchQuery: "",
+            similarDestinations: [], // 新增数据
         };
     },
     computed: {
         sortOptions() {
-            return ['浏览量', '评分'];
+            return ["浏览量", "评分"];
         },
     },
     methods: {
         fetchDestination() {
             const id = this.$route.params.id;
             fetch(`http://127.0.0.1:5000/destination/${id}`)
-                .then(response => response.json())
-                .then(data => {
+                .then((response) => response.json())
+                .then((data) => {
                     this.destination = data;
                 });
         },
@@ -238,9 +358,23 @@ export default {
             const id = this.$route.params.id;
             const sortBy = this.sortBy;
             const searchQuery = this.searchQuery;
-            const response = await fetch(`http://127.0.0.1:5000/destination/${id}/notes?sortBy=${sortBy}&searchQuery=${searchQuery}`);
+            const response = await fetch(
+                `http://127.0.0.1:5000/destination/${id}/notes?sortBy=${sortBy}&searchQuery=${searchQuery}`,
+            );
             const data = await response.json();
-            this.travelNotes = data.map(note => ({ ...note, showFull: false, newRating: 0 }));
+            this.travelNotes = data.map((note) => ({
+                ...note,
+                showFull: false,
+                newRating: 0,
+            }));
+        },
+        async fetchSimilarDestinations() {
+            const id = this.$route.params.id;
+            const response = await fetch(
+                `http://127.0.0.1:5000/destination/${id}/similar`,
+            );
+            const data = await response.json();
+            this.similarDestinations = data;
         },
         toggleFullNote(note) {
             note.showFull = !note.showFull;
@@ -250,9 +384,11 @@ export default {
         },
         incrementViews(noteId) {
             fetch(`http://127.0.0.1:5000/note/${noteId}/increment_views`, {
-                method: 'POST'
+                method: "POST",
             }).then(() => {
-                const note = this.travelNotes.find(note => note.id === noteId);
+                const note = this.travelNotes.find(
+                    (note) => note.id === noteId,
+                );
                 if (note) {
                     note.views += 1;
                 }
@@ -260,11 +396,12 @@ export default {
         },
         submitRating(note) {
             fetch(`http://127.0.0.1:5000/note/${note.id}/rate`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ rating: note.newRating * 20 })  // 将星级转换为百分比
-            }).then(response => response.json())
-                .then(data => {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ rating: note.newRating * 20 }), // 将星级转换为百分比
+            })
+                .then((response) => response.json())
+                .then((data) => {
                     if (data.success) {
                         this.fetchTravelNotes();
                     } else {
@@ -272,27 +409,65 @@ export default {
                     }
                 });
         },
+        async generateImage() {
+            const response = await fetch(
+                "http://127.0.0.1:5000/generate_image",
+                {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ content: this.valueHtml }),
+                },
+            );
+            const data = await response.json();
+            if (data.success) {
+                const imageUrl = data.imageUrl;
+                this.valueHtml += `<p><img src="${imageUrl}" alt="Generated Image" /></p>`;
+            } else {
+                alert(data.message || "生成图片失败");
+            }
+        },
+        async generateVideo() {
+            const response = await fetch(
+                "http://127.0.0.1:5000/generate_video",
+                {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ content: this.valueHtml }),
+                },
+            );
+            const data = await response.json();
+            if (data.success) {
+                const videoUrl = data.videoUrl;
+                this.valueHtml += `<p><img src="${videoUrl}" alt="Generated Video" /></p>`;
+            } else {
+                alert(data.message || "生成视频失败");
+            }
+        },
         submitTravelNote() {
             const id = this.$route.params.id;
-            const username = localStorage.getItem('username');
+            const username = localStorage.getItem("username");
             fetch(`http://127.0.0.1:5000/destination/${id}/notes`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ title: this.noteTitle, content: this.valueHtml, username })
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    title: this.noteTitle,
+                    content: this.valueHtml,
+                    username,
+                }),
             })
-                .then(response => response.json())
-                .then(data => {
+                .then((response) => response.json())
+                .then((data) => {
                     if (data.success) {
                         this.fetchTravelNotes();
-                        this.noteTitle = '';
-                        this.valueHtml = '';
+                        this.noteTitle = "";
+                        this.valueHtml = "";
                     } else {
                         alert(data.message);
                     }
                 });
         },
         navigateToHome() {
-            this.$router.push('/home');
+            this.$router.push("/home");
         },
         navigateToTravel() {
             const id = this.$route.params.id;
@@ -305,12 +480,13 @@ export default {
         },
         searchQuery() {
             this.fetchTravelNotes();
-        }
+        },
     },
     created() {
         this.fetchDestination();
         this.fetchTravelNotes();
-    }
+        this.fetchSimilarDestinations();
+    },
 };
 </script>
 
@@ -400,7 +576,7 @@ export default {
 .v-divider {
     margin-top: 8px;
     margin-bottom: 8px;
-    border-color: #BBBBBB;
+    border-color: #bbbbbb;
 }
 
 .notes-container {
@@ -409,9 +585,15 @@ export default {
     overflow-x: hidden;
 }
 
-.submit-btn {
+.generate-btn {
     margin-left: 10px;
     margin-top: 10px;
+}
+
+.submit-btn {
+    position: absolute;
+    right: 10px;
+    bottom: 15px;
 }
 
 .sort-select {
@@ -422,7 +604,7 @@ export default {
     position: fixed;
     bottom: 20px;
     right: 20px;
-    background-color: #1976D2;
+    background-color: #1976d2;
     color: white;
     border-radius: 50%;
 }
@@ -446,7 +628,7 @@ export default {
 
 .map-btn {
     margin-right: 50px;
-    background-color: #1976D2;
+    background-color: #1976d2;
     color: white;
     width: 90px;
     height: 90px;
@@ -457,7 +639,7 @@ export default {
 }
 
 .map-text {
-    color: #1976D2;
+    color: #1976d2;
     font-weight: bold;
     margin-right: 50px;
     margin-top: 8px;
@@ -467,5 +649,9 @@ export default {
 
 .center-icon {
     margin: 0;
+}
+
+.similar-card {
+    margin-bottom: 20px;
 }
 </style>

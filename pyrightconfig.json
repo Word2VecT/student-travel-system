@@ -1,0 +1,10 @@
+{
+  "venvPath": "/Users/tang/.virtualenvs",
+  "venv": "/Users/tang/.virtualenvs/travel",
+  "executionEnvironments": [
+    {
+      "python": "/Users/tang/.virtualenvs/travel/bin/python"
+    }
+  ],
+  "pythonVersion": "3.12"
+}

@@ -1,11 +1,15 @@
 import os
-
+import zlib
+import base64
 import networkx as nx
+import random
 from config import Config
 from flask import Flask, jsonify, request, send_from_directory
 from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.utils import secure_filename
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics.pairwise import linear_kernel
 
 app = Flask(__name__)
 app.config.from_object(Config)
@@ -174,19 +178,27 @@ def get_travel_notes(id):
 
     notes = query.all()
 
-    return jsonify(
-        [
+    # 解压缩内容
+    notes_data = []
+    for note in notes:
+        try:
+            decompressed_content = zlib.decompress(
+                base64.b64decode(note.content)
+            ).decode("utf-8")
+        except Exception as e:
+            decompressed_content = note.content  # 如果解压失败，保持原内容
+        notes_data.append(
             {
                 "id": note.id,
                 "title": note.title,
-                "content": note.content,
+                "content": decompressed_content,
                 "views": note.views,
                 "rating": note.rating,
                 "username": note.username,
             }
-            for note in notes
-        ]
-    )
+        )
+
+    return jsonify(notes_data)
 
 
 @app.route("/destination/<int:id>/notes", methods=["POST"])
@@ -196,8 +208,13 @@ def add_travel_note(id):
     content = data.get("content")
     username = data.get("username")
 
+    # 压缩内容
+    compressed_content = base64.b64encode(
+        zlib.compress(content.encode("utf-8"))
+    ).decode("utf-8")
+
     note = TravelNote(
-        destination_id=id, title=title, content=content, username=username
+        destination_id=id, title=title, content=compressed_content, username=username
     )
     db.session.add(note)
     db.session.commit()
@@ -284,6 +301,90 @@ def calculate_route():
     tsp_path.append(0)
 
     return jsonify({"path": tsp_path})
+
+
+@app.route("/generate_image", methods=["POST"])
+def generate_image():
+    data = request.get_json()
+    content = data.get("content")
+
+    # 调用 mobius.py 脚本生成图片
+    os.system(f"python3 mobius.py '{content}'")
+
+    # 假设生成的图片保存在 'generated_image.png'
+    filename = "generated_image.png"
+    filepath = os.path.join(app.config["UPLOAD_FOLDER"], filename)
+    if os.path.exists(filepath):
+        image_url = f"http://127.0.0.1:5000/uploads/{filename}"
+        return jsonify({"success": True, "imageUrl": image_url})
+    else:
+        return jsonify({"success": False, "message": "生成图片失败"})
+
+
+@app.route("/generate_video", methods=["POST"])
+def generate_video():
+    data = request.get_json()
+    content = data.get("content", "")
+    if not content:
+        return jsonify({"success": False, "message": "内容不能为空"}), 400
+
+    command = f'python animate_diff_lightning.py "{content}"'
+    os.system(command)
+
+    filename = "animation.gif"
+    filepath = os.path.join(app.config["UPLOAD_FOLDER"], filename)
+    if os.path.exists(filepath):
+        video_url = f"http://127.0.0.1:5000/uploads/{filename}"
+        return jsonify({"success": True, "videoUrl": video_url})
+    else:
+        return jsonify({"success": False, "message": "生成视频失败"})
+
+
+def calculate_similarity():
+    with app.app_context():
+        destinations = Destination.query.all()
+        contents = [destination.description for destination in destinations]
+        ids = [destination.id for destination in destinations]
+
+        vectorizer = TfidfVectorizer(stop_words="english")
+        tfidf_matrix = vectorizer.fit_transform(contents)
+        cosine_similarities = linear_kernel(tfidf_matrix, tfidf_matrix)
+
+        return ids, cosine_similarities
+
+
+destination_ids, destination_similarities = calculate_similarity()
+
+
+@app.route("/destination/<int:id>/similar", methods=["GET"])
+def get_similar_destinations(id):
+    try:
+        idx = destination_ids.index(id)
+    except ValueError:
+        return jsonify([])
+
+    sim_scores = list(enumerate(destination_similarities[idx]))
+    sim_scores = sorted(sim_scores, key=lambda x: x[1], reverse=True)
+    sim_scores = sim_scores[1:7]  # 取前5个相似的景点
+
+    similar_destinations = []
+    for i in sim_scores:
+        similar_destination = Destination.query.get(destination_ids[i[0]])
+        similar_destinations.append(
+            {
+                "id": similar_destination.id,
+                "name": similar_destination.name,
+                "popularity": similar_destination.popularity,
+                "rating": similar_destination.rating,
+                "price": similar_destination.price,
+                "category": similar_destination.category,
+                "region": similar_destination.region,
+                "address": similar_destination.address,
+                "description": similar_destination.description,
+            }
+        )
+
+    return jsonify(similar_destinations)
 
 
 if __name__ == "__main__":

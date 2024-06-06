@@ -5,17 +5,18 @@
  */
 
 // Plugins
-import { registerPlugins } from '@/plugins';
+import { registerPlugins } from "@/plugins";
 
 // Components
-import App from './App.vue';
-import router from './router';
+import Particles from "particles.vue3";
+import App from "./App.vue";
+import router from "./router";
 
 // Composables
-import { createApp } from 'vue';
+import { createApp } from "vue";
 
-const app = createApp(App).use(router);
+const app = createApp(App).use(router).use(Particles);
 
-registerPlugins(app)
+registerPlugins(app);
 
-app.mount('#app');
+app.mount("#app");

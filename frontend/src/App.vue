@@ -1,12 +1,12 @@
 <template>
-  <v-app>
-    <v-main>
-      <router-view></router-view>
-    </v-main>
-  </v-app>
+    <v-app>
+        <v-main>
+            <router-view></router-view>
+        </v-main>
+    </v-app>
 </template>
 
 <script setup>
-import Login from './components/LoginRegister.vue';
-import Home from './components/Home.vue';
+import Login from "./components/LoginRegister.vue";
+import Home from "./components/Home.vue";
 </script>
