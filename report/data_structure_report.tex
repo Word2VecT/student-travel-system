@@ -1,0 +1,189 @@
+\documentclass{ctexart}
+\usepackage{geometry}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{booktabs}
+\usepackage{minted}
+\usepackage{tikz}
+\usetikzlibrary{shapes.geometric, arrows}
+
+\tikzstyle{block} = [rectangle, rounded corners, minimum width=3cm, minimum height=1cm, text centered, draw=black, fill=blue!30]
+\tikzstyle{line} = [draw, -latex']
+
+\newminted{sql}{breakanywhere,breaklines,linenos,frame=single}
+
+\title{学生游学系统 \\ 数据结构说明报告}
+\author{队长：唐梓楠\ 2022211404 \\ 成员：马伟昊\ 2022211401 \\ 张付\ 2022211396}
+\date{\today}
+
+\hypersetup{colorlinks=true,linkcolor=black,filecolor=magenta,urlcolor=cyan}
+
+\begin{document}
+
+\maketitle
+
+\tableofcontents
+
+\newpage
+
+\section{引言}
+本报告详细描述了学生游学系统的数据结构设计，包括用户表、景点表和游记表的字段及其含义。通过对各表的设计说明，可以清晰地了解系统的数据处理逻辑和实现方法。
+
+\section{数据结构}
+
+\subsection{用户表}
+用户表用于存储用户的基本信息，包括用户ID、用户名和密码。每个用户在系统中都有唯一的ID标识。
+
+\begin{center}
+    \begin{tabular}{ccc}
+        \toprule
+        字段名      & 类型      & 描述         \\
+        \midrule
+        id       & INT     & 用户ID，主键，自增 \\
+        username & VARCHAR & 用户名，唯一，不为空 \\
+        password & VARCHAR & 密码，不为空     \\
+        \bottomrule
+    \end{tabular}
+\end{center}
+
+\paragraph{字段说明:}
+\begin{itemize}
+    \item \textbf{id}：用户的唯一标识符，自动递增。
+    \item \textbf{username}：用户的登录名，必须唯一且不为空。
+    \item \textbf{password}：用户的密码，存储为加密后的字符串。
+\end{itemize}
+
+\subsection{景点表}
+景点表用于存储景点的基本信息，包括景点ID、名称、热度、类别、评分、价格、地址、地区和描述。每个景点在系统中都有唯一的ID标识。
+
+\begin{center}
+    \begin{tabular}{ccc}
+        \toprule
+        字段名         & 类型      & 描述         \\
+        \midrule
+        id          & INT     & 景点ID，主键，自增 \\
+        name        & VARCHAR & 景点名称，不为空   \\
+        popularity  & INT     & 热度，不为空     \\
+        category    & VARCHAR & 类别，可以为空    \\
+        rating      & FLOAT   & 评分，不为空     \\
+        price       & FLOAT   & 价格，不为空     \\
+        address     & VARCHAR & 地址，不为空     \\
+        region      & VARCHAR & 地区，不为空     \\
+        description & TEXT    & 景点描述，不为空   \\
+        \bottomrule
+    \end{tabular}
+\end{center}
+
+\paragraph{字段说明:}
+\begin{itemize}
+    \item \textbf{id}：景点的唯一标识符，自动递增。
+    \item \textbf{name}：景点的名称，不为空。
+    \item \textbf{popularity}：景点的热度，用于排序和推荐。
+    \item \textbf{category}：景点的类别，例如5A、4A等，可以为空。
+    \item \textbf{rating}：景点的评分，范围为0-5。
+    \item \textbf{price}：景点的价格，门票费用。
+    \item \textbf{address}：景点的详细地址。
+    \item \textbf{region}：景点所属的地区，例如某个城市或区域。
+    \item \textbf{description}：景点的详细描述。
+\end{itemize}
+
+\subsection{游记表}
+游记表用于存储游记的基本信息，包括游记ID、景点ID、内容、浏览量、评分、用户名、标题和评分次数。每篇游记在系统中都有唯一的ID标识。
+
+\begin{center}
+    \begin{tabular}{ccc}
+        \toprule
+        字段名             & 类型      & 描述          \\
+        \midrule
+        id              & INT     & 游记ID，主键，自增  \\
+        destination\_id & INT     & 景点ID，外键，不为空 \\
+        content         & TEXT    & 内容，不为空      \\
+        views           & INT     & 浏览量，默认值为0   \\
+        rating          & FLOAT   & 评分，默认值为0    \\
+        username        & VARCHAR & 用户名，不为空     \\
+        title           & VARCHAR & 标题，不为空      \\
+        rate\_cnt       & INT     & 评分次数，默认值为0  \\
+        \bottomrule
+    \end{tabular}
+\end{center}
+
+\paragraph{字段说明:}
+\begin{itemize}
+    \item \textbf{id}：游记的唯一标识符，自动递增。
+    \item \textbf{destination\_id}：游记所属的景点ID，外键关联景点表。
+    \item \textbf{content}：游记的详细内容，可以包含文字和图片。
+    \item \textbf{views}：游记的浏览量，用于计算热度。
+    \item \textbf{rating}：游记的评分，范围为0-5。
+    \item \textbf{username}：发布游记的用户的用户名。
+    \item \textbf{title}：游记的标题。
+    \item \textbf{rate\_cnt}：游记的评分次数，用于计算平均评分。
+\end{itemize}
+
+\section{数据库设计}
+系统采用MySQL数据库，数据库中的每张表分别对应上述的数据结构设计。
+
+\subsection{用户表设计}
+\begin{sqlcode}
+    CREATE TABLE `user` (
+    `id` int unsigned NOT NULL AUTO_INCREMENT,
+    `username` varchar(120) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+    `password` varchar(120) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+    PRIMARY KEY (`id`),
+    UNIQUE KEY `UC_username` (`username`)
+    ) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+\end{sqlcode}
+
+\subsection{景点表设计}
+\begin{sqlcode}
+    CREATE TABLE `destination` (
+    `id` int unsigned NOT NULL AUTO_INCREMENT,
+    `name` varchar(120) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+    `popularity` int NOT NULL,
+    `category` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+    `rating` float NOT NULL,
+    `price` float NOT NULL,
+    `address` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+    `region` varchar(10) NOT NULL,
+    `description` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+    PRIMARY KEY (`id`)
+    ) ENGINE=InnoDB AUTO_INCREMENT=3991 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+\end{sqlcode}
+
+\subsection{游记表设计}
+\begin{sqlcode}
+    CREATE TABLE `travel_note` (
+    `id` int unsigned NOT NULL AUTO_INCREMENT,
+    `destination_id` int unsigned NOT NULL,
+    `content` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+    `views` int NOT NULL DEFAULT '0',
+    `rating` float NOT NULL DEFAULT '0',
+    `username` varchar(120) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+    `title` varchar(120) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+    `rate_cnt` int NOT NULL DEFAULT '0',
+    PRIMARY KEY (`id`),
+    KEY `fk_destination` (`destination_id`),
+    CONSTRAINT `fk_destination` FOREIGN KEY (`destination_id`) REFERENCES `destination` (`id`)
+    ) ENGINE=InnoDB AUTO_INCREMENT=25 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+\end{sqlcode}
+
+\section{数据关系图}
+系统中各数据表之间的关系如下图所示：
+\begin{center}
+    \begin{tikzpicture}[node distance=2cm]
+
+        % Nodes
+        \node (user) [block] {用户表 (user)};
+        \node (destination) [block, below of=user] {景点表 (destination)};
+        \node (travel_note) [block, below of=destination] {游记表 (travel\_note)};
+
+        % Lines
+        \path [line] (user) -- (travel_note);
+        \path [line] (destination) -- (travel_note);
+
+    \end{tikzpicture}
+\end{center}
+
+\section{总结}
+本报告详细描述了学生游学系统的数据结构设计。通过对用户表、景点表和游记表的详细说明，可以清晰地了解系统的数据处理逻辑和实现方法。系统采用MySQL数据库进行数据存储，各表的设计确保了数据的完整性和一致性。
+
+\end{document}

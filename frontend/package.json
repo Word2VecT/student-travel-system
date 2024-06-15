@@ -9,10 +9,9 @@
   "dependencies": {
     "@amap/amap-jsapi-loader": "^1.0.1",
     "@mdi/font": "7.0.96",
-    "@tsparticles/slim": "^3.4.0",
-    "@vueup/vue-quill": "^1.2.0",
     "@wangeditor/editor": "^5.1.23",
     "@wangeditor/editor-for-vue": "^5.1.12",
+    "depcheck": "^1.4.7",
     "particles.vue3": "^2.12.0",
     "roboto-fontface": "*",
     "vue": "^3.4.0",

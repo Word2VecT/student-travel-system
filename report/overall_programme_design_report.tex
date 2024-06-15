@@ -1,0 +1,256 @@
+\documentclass{ctexart}
+\usepackage{geometry}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{paralist}
+\usepackage{amsmath}
+\usepackage{xcolor}
+\usepackage{multirow}
+\usepackage{booktabs}
+\usepackage[normalem]{ulem}
+\usepackage{longtable}
+\usepackage{float}
+\usepackage{tikz}
+\usetikzlibrary{shapes.geometric, arrows}
+
+\tikzstyle{block} = [rectangle, rounded corners, minimum width=3cm, minimum height=1cm, text centered, draw=black, fill=blue!30]
+\tikzstyle{line} = [draw, -latex']
+
+\title{学生游学系统 \\ 总体方案设计报告}
+\author{队长：唐梓楠\ 2022211404 \\ 成员：马伟昊\ 2022211401 \\ 张付\ 2022211396}
+\date{\today}
+
+\hypersetup{colorlinks=true,linkcolor=black,filecolor=magenta,urlcolor=cyan}
+
+\begin{document}
+
+\maketitle
+
+\tableofcontents
+
+\newpage
+
+\section{引言}
+本系统旨在设计和实现一个帮助学生管理游学活动的系统，具备游学推荐、游学路线规划、场所查询、游学日记管理等功能。本文档详细描述了学生游学系统的总体设计方案，包括系统架构、功能需求、数据结构、模块设计和实现计划。
+
+\section{项目背景}
+学生经常利用假期去各地游学。学生游学系统可以帮助学生管理自己的游学活动，具备游学推荐、游学路线规划、场所查询、游学日记管理等功能，从而提高游学的效率和体验。
+
+\section{系统架构}
+学生游学系统采用前后端分离架构，前端使用Vue.js和Vuetify框架，后端使用Python和Flask框架，数据存储采用MySQL数据库。系统架构图如图\ref{fig:architecture}所示。
+
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}[node distance=1.5cm]
+
+        % Nodes
+        \node (frontend) [block] {前端 (Vue.js, Vuetify)};
+        \node (backend) [block, below of=frontend] {后端 (Flask)};
+        \node (database) [block, below of=backend] {数据库 (MySQL)};
+        \node (user) [block, left of=frontend, xshift=-4cm] {用户};
+
+        % Lines
+        \path [line] (user) -- (frontend);
+        \path [line] (frontend) -- (backend);
+        \path [line] (backend) -- (database);
+
+        % Frontend Modules
+        \node (login) [block, right of=frontend, xshift=4cm] {登录注册模块};
+        \node (recommendation) [block, below of=login] {游学推荐模块};
+        \node (route) [block, below of=recommendation] {路线规划模块};
+        \node (query) [block, below of=route] {场所查询模块};
+        \node (diary) [block, below of=query] {游学日记管理模块};
+
+        \path [line] (frontend) -- (login);
+        \path [line] (frontend) -- (recommendation);
+        \path [line] (frontend) -- (route);
+        \path [line] (frontend) -- (query);
+        \path [line] (frontend) -- (diary);
+
+        % Backend Modules
+        \node (usermanage) [block, right of=backend, xshift=4cm] {用户管理模块};
+        \node (recommender) [block, below of=usermanage] {推荐算法模块};
+        \node (routeplanner) [block, below of=recommender] {路线规划算法模块};
+        \node (facilityquery) [block, below of=routeplanner] {场所查询模块};
+        \node (diarymanage) [block, below of=facilityquery] {日记管理模块};
+
+        \path [line] (backend) -- (usermanage);
+        \path [line] (backend) -- (recommender);
+        \path [line] (backend) -- (routeplanner);
+        \path [line] (backend) -- (facilityquery);
+        \path [line] (backend) -- (diarymanage);
+
+    \end{tikzpicture}
+    \caption{系统架构图}
+    \label{fig:architecture}
+\end{figure}
+
+\subsection{前端架构}
+前端主要负责用户界面的展示和交互，使用Vue.js框架和Vuetify UI组件库。主要模块包括：
+\begin{itemize}
+    \item 登录注册模块
+    \item 游学推荐模块
+    \item 路线规划模块
+    \item 场所查询模块
+    \item 游学日记管理模块
+\end{itemize}
+
+\subsection{后端架构}
+后端主要负责业务逻辑的处理和数据的存储与管理，使用Flask框架。主要模块包括：
+\begin{itemize}
+    \item 用户管理模块
+    \item 推荐算法模块
+    \item 路线规划算法模块
+    \item 场所查询模块
+    \item 日记管理模块
+\end{itemize}
+
+\subsection{数据库设计}
+系统采用MySQL数据库，主要表设计包括：
+\begin{itemize}
+    \item 用户表
+    \item 景点表
+    \item 游记表
+\end{itemize}
+
+\section{功能需求}
+
+\subsection{游学推荐}
+\begin{itemize}
+    \item 根据用户喜好推荐游学景点和学校。
+    \item 支持按照热度、评价和个人兴趣进行推荐。
+    \item 用户可以输入景点或学校的名称、关键字进行查询，并按热度和评价排序。
+\end{itemize}
+
+\subsection{游学路线规划}
+\begin{itemize}
+    \item 用户输入目标景点或场所信息，系统规划最优游学路线。
+    \item 支持多目标景点的最优路线规划。
+    \item 提供最短距离和最短时间的路线选择，支持步行和骑行两种出行方式。
+\end{itemize}
+
+\subsection{场所查询}
+\begin{itemize}
+    \item 提供景区或学校内部设施的查询和排序功能。
+    \item 用户可以输入类别或名称查询设施，并按距离排序。
+    \item 提供设施的详细信息和导航功能。
+\end{itemize}
+
+\subsection{游学日记管理}
+\begin{itemize}
+    \item 用户可以撰写、存储和管理游学日记。
+    \item 支持日记的浏览、评分和推荐。
+    \item 提供按热度、评价和关键词的日记搜索功能。
+    \item 支持日记内容的全文检索和压缩存储。
+\end{itemize}
+
+\section{数据结构}
+系统的数据结构设计如下：
+
+\subsection{用户表}
+\begin{center}
+    \begin{tabular}{ccc}
+        \toprule
+        字段名      & 类型      & 描述   \\
+        \midrule
+        id       & INT     & 用户ID \\
+        username & VARCHAR & 用户名  \\
+        password & VARCHAR & 密码   \\
+        \bottomrule
+    \end{tabular}
+\end{center}
+
+\subsection{景点表}
+\begin{center}
+    \begin{tabular}{ccc}
+        \toprule
+        字段名         & 类型      & 描述   \\
+        \midrule
+        id          & INT     & 景点ID \\
+        name        & VARCHAR & 景点名称 \\
+        popularity  & INT     & 热度   \\
+        category    & VARCHAR & 类别   \\
+        rating      & FLOAT   & 评分   \\
+        price       & FLOAT   & 价格   \\
+        address     & VARCHAR & 地址   \\
+        region      & VARCHAR & 地区   \\
+        description & TEXT    & 景点描述 \\
+        \bottomrule
+    \end{tabular}
+\end{center}
+
+\subsection{游记表}
+\begin{center}
+    \begin{tabular}{ccc}
+        \toprule
+        字段名              & 类型      & 描述   \\
+        \midrule
+        id               & INT     & 游记ID \\
+        desalination\_id & INT     & 景点ID \\
+        content          & TEXT    & 内容   \\
+        views            & INT     & 浏览量  \\
+        rating           & FLOAT   & 评分   \\
+        username         & VARCHAR & 用户名  \\
+        title            & VARCHAR & 标题   \\
+        rate\_cnt        & INT     & 评分次数 \\
+        \bottomrule
+    \end{tabular}
+\end{center}
+
+\section{模块设计}
+
+\subsection{用户管理模块}
+负责用户的注册、登录、权限管理等功能。主要接口包括：
+\begin{itemize}
+    \item 注册接口
+    \item 登录接口
+    \item 用户信息修改接口
+\end{itemize}
+
+\subsection{推荐算法模块}
+根据用户的喜好推荐景点和学校。主要接口包括：
+\begin{itemize}
+    \item 推荐景点接口
+    \item 推荐学校接口
+    \item 热度和评价排序接口
+\end{itemize}
+
+\subsection{路线规划算法模块}
+根据用户输入的目标地点规划最优游学路线。主要接口包括：
+\begin{itemize}
+    \item 单目标路线规划接口
+    \item 多目标路线规划接口
+    \item 路线选择接口（步行/骑行）
+\end{itemize}
+
+\subsection{场所查询模块}
+提供景区或学校内部设施的查询和排序功能。主要接口包括：
+\begin{itemize}
+    \item 设施查询接口
+    \item 设施排序接口
+    \item 设施详细信息接口
+\end{itemize}
+
+\subsection{日记管理模块}
+支持游学日记的撰写、存储、浏览和推荐。主要接口包括：
+\begin{itemize}
+    \item 日记撰写接口
+    \item 日记存储接口
+    \item 日记浏览接口
+    \item 日记推荐接口
+\end{itemize}
+
+\section{项目进度安排}
+\begin{enumerate}
+    \item \textbf{第1-2周}：需求分析与技术选型，确定项目组成员及分工。
+    \item \textbf{第3-4周}：完成系统架构设计和数据库设计，准备开发环境。
+    \item \textbf{第5-8周}：前后端功能开发，完成游学推荐、路线规划、场所查询和日记管理模块的基本功能。
+    \item \textbf{第9-10周}：功能测试与优化，修复发现的bug，完善系统功能。
+    \item \textbf{第11-12周}：文档编写与项目演示，准备项目报告和演示材料。
+    \item \textbf{第13周}：项目验收与总结，提交最终报告和代码。
+\end{enumerate}
+
+\section{总结}
+本设计方案详细介绍了学生游学系统的功能需求、系统架构、模块划分、数据结构、算法设计以及项目进度安排。通过系统的设计和实现，旨在帮助学生更好地管理游学活动，提高游学体验。
+
+\end{document}

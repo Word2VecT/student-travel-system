@@ -1,0 +1,228 @@
+\documentclass{ctexart}
+\usepackage{geometry}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{booktabs}
+\usepackage{float}
+\usepackage{tikz}
+\usetikzlibrary{shapes.geometric, arrows}
+
+\tikzstyle{block} = [rectangle, rounded corners, minimum width=3cm, minimum height=1cm, text centered, draw=black, fill=blue!30]
+\tikzstyle{line} = [draw, -latex']
+
+\title{学生游学系统 \\ 模块设计报告}
+\author{队长：唐梓楠\ 2022211404 \\ 成员：马伟昊\ 2022211401 \\ 张付\ 2022211396}
+\date{\today}
+
+\hypersetup{colorlinks=true,linkcolor=black,filecolor=magenta,urlcolor=cyan}
+
+\begin{document}
+
+\maketitle
+
+\tableofcontents
+
+\newpage
+
+\section{引言}
+本报告详细描述了学生游学系统的各个模块设计，包括用户管理模块、景点推荐模块、路线规划模块、场所查询模块和游记管理模块。
+
+\section{系统架构}
+学生游学系统采用前后端分离架构，前端使用Vue.js和Vuetify框架，后端使用Python和Flask框架，数据存储采用MySQL数据库。系统架构图如图\ref{fig:architecture}所示。
+
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}[node distance=2cm]
+
+        % Nodes
+        \node (frontend) [block] {前端 (Vue.js, Vuetify)};
+        \node (backend) [block, below of=frontend] {后端 (Flask)};
+        \node (database) [block, below of=backend] {数据库 (MySQL)};
+        \node (user) [block, left of=frontend, xshift=-4cm] {用户};
+
+        % Lines
+        \path [line] (user) -- (frontend);
+        \path [line] (frontend) -- (backend);
+        \path [line] (backend) -- (database);
+
+        % Frontend Modules
+        \node (login) [block, right of=frontend, xshift=4cm] {登录注册模块};
+        \node (recommendation) [block, below of=login] {游学推荐模块};
+        \node (route) [block, below of=recommendation] {路线规划模块};
+        \node (query) [block, below of=route] {场所查询模块};
+        \node (diary) [block, below of=query] {游学日记管理模块};
+
+        \path [line] (frontend) -- (login);
+        \path [line] (frontend) -- (recommendation);
+        \path [line] (frontend) -- (route);
+        \path [line] (frontend) -- (query);
+        \path [line] (frontend) -- (diary);
+
+        % Backend Modules
+        \node (usermanage) [block, right of=backend, xshift=4cm] {用户管理模块};
+        \node (recommender) [block, below of=usermanage] {推荐算法模块};
+        \node (routeplanner) [block, below of=recommender] {路线规划算法模块};
+        \node (facilityquery) [block, below of=routeplanner] {场所查询模块};
+        \node (diarymanage) [block, below of=facilityquery] {日记管理模块};
+
+        \path [line] (backend) -- (usermanage);
+        \path [line] (backend) -- (recommender);
+        \path [line] (backend) -- (routeplanner);
+        \path [line] (backend) -- (facilityquery);
+        \path [line] (backend) -- (diarymanage);
+
+    \end{tikzpicture}
+    \caption{系统架构图}
+    \label{fig:architecture}
+\end{figure}
+
+\section{模块设计}
+
+\subsection{用户管理模块}
+用户管理模块负责用户的注册、登录、权限管理等功能。
+
+\subsubsection{功能需求}
+\begin{itemize}
+    \item 用户注册：用户可以通过注册成为系统的成员。
+    \item 用户登录：用户可以通过用户名和密码登录系统。
+    \item 权限管理：不同角色的用户具有不同的权限。
+\end{itemize}
+
+\subsubsection{数据结构}
+用户表用于存储用户的基本信息，包括用户ID、用户名和密码。
+
+\begin{center}
+    \begin{tabular}{ccc}
+        \toprule
+        字段名      & 类型      & 描述   \\
+        \midrule
+        id       & INT     & 用户ID \\
+        username & VARCHAR & 用户名  \\
+        password & VARCHAR & 密码   \\
+        \bottomrule
+    \end{tabular}
+\end{center}
+
+\subsubsection{功能模块设计}
+\begin{itemize}
+    \item \textbf{注册功能}：提供用户注册接口，用户输入用户名和密码进行注册，系统将用户信息存储到数据库中。
+    \item \textbf{登录功能}：提供用户登录接口，用户输入用户名和密码进行登录，系统验证用户信息后返回登录结果。
+    \item \textbf{权限管理功能}：根据用户角色设置不同的权限，如普通用户和管理员权限。
+\end{itemize}
+
+\subsection{景点推荐模块}
+景点推荐模块负责根据用户的偏好和历史记录推荐合适的景点。
+
+\subsubsection{功能需求}
+\begin{itemize}
+    \item 景点推荐：根据用户的偏好推荐合适的景点。
+    \item 搜索功能：用户可以搜索特定景点。
+    \item 分类筛选：用户可以根据类别、地区等条件筛选景点。
+\end{itemize}
+
+\subsubsection{数据结构}
+景点表用于存储景点的基本信息，包括景点ID、名称、热度、类别、评分、价格、地址、地区和描述。
+
+\begin{center}
+    \begin{tabular}{ccc}
+        \toprule
+        字段名         & 类型      & 描述   \\
+        \midrule
+        id          & INT     & 景点ID \\
+        name        & VARCHAR & 景点名称 \\
+        popularity  & INT     & 热度   \\
+        category    & VARCHAR & 类别   \\
+        rating      & FLOAT   & 评分   \\
+        price       & FLOAT   & 价格   \\
+        address     & VARCHAR & 地址   \\
+        region      & VARCHAR & 地区   \\
+        description & TEXT    & 景点描述 \\
+        \bottomrule
+    \end{tabular}
+\end{center}
+
+\subsubsection{功能模块设计}
+\begin{itemize}
+    \item \textbf{推荐算法}：基于用户的浏览历史和评分记录推荐相似的景点。
+    \item \textbf{搜索功能}：实现景点的模糊搜索功能，支持用户按名称或关键词搜索景点。
+    \item \textbf{分类筛选}：支持用户按类别、地区等条件筛选景点。
+\end{itemize}
+
+\subsection{路线规划模块}
+路线规划模块负责为用户规划最佳的游学路线。
+
+\subsubsection{功能需求}
+\begin{itemize}
+    \item 单目标路线规划：根据用户选择的目标地点规划最优路线。
+    \item 多目标路线规划：支持多个目标地点的最优路线规划。
+    \item 出行方式选择：支持步行和骑行两种出行方式。
+\end{itemize}
+
+\subsubsection{数据结构}
+路线规划模块主要基于景点表和用户选择的目标地点进行规划。
+
+\subsubsection{功能模块设计}
+\begin{itemize}
+    \item \textbf{单目标规划}：根据用户选择的单一目标地点，规划从当前位置到目标地点的最优路线。
+    \item \textbf{多目标规划}：支持用户选择多个目标地点，规划覆盖所有目标地点的最优路线。
+    \item \textbf{出行方式选择}：提供步行和骑行两种出行方式的路线规划，用户可以自由选择。
+\end{itemize}
+
+\subsection{场所查询模块}
+场所查询模块负责为用户提供景区或学校内部设施的查询和排序功能。
+
+\subsubsection{功能需求}
+\begin{itemize}
+    \item 设施查询：用户可以查询景区或学校内部的设施。
+    \item 设施排序：根据用户的需求对设施进行排序。
+    \item 设施详情：提供设施的详细信息和导航功能。
+\end{itemize}
+
+\subsubsection{功能模块设计}
+\begin{itemize}
+    \item \textbf{设施查询}：用户可以按类别或名称查询特定设施。
+    \item \textbf{设施排序}：根据距离或用户评分对设施进行排序。
+    \item \textbf{设施详情}：提供设施的详细信息，并支持导航到该设施。
+\end{itemize}
+
+\subsection{游记管理模块}
+游记管理模块负责用户的游记撰写、存储、浏览和推荐。
+
+\subsubsection{功能需求}
+\begin{itemize}
+    \item 游记撰写：用户可以撰写并发布游记。
+    \item 游记浏览：用户可以浏览并评分其他用户的游记。
+    \item 游记推荐：根据热度和评分推荐优秀的游记。
+\end{itemize}
+
+\subsubsection{数据结构}
+游记表用于存储游记的基本信息，包括游记ID、景点ID、内容、浏览量、评分、用户名、标题和评分次数。
+
+\begin{center}
+    \begin{tabular}{ccc}
+        \toprule
+        字段名             & 类型      & 描述   \\
+        \midrule
+        id              & INT     & 游记ID \\
+        destination\_id & INT     & 景点ID \\
+        content         & TEXT    & 内容   \\
+        views           & INT     & 浏览量  \\
+        rating          & FLOAT   & 评分   \\
+        username        & VARCHAR & 用户名  \\
+        title           & VARCHAR & 标题   \\
+        rate\_cnt       & INT     & 评分次数 \\
+        \bottomrule
+    \end{tabular}
+\end{center}
+
+\subsubsection{功能模块设计}
+\begin{itemize}
+    \item \textbf{游记撰写}：用户可以撰写游记，并可以添加图片和文字内容。
+    \item \textbf{游记浏览}：用户可以浏览其他用户发布的游记，并根据热度和评分进行排序。
+    \item \textbf{游记推荐}：系统根据游记的热度和评分推荐给用户浏览。
+\end{itemize}
+
+\section{总结}
+本报告详细描述了学生游学系统的各个模块设计。通过对用户管理模块、景点推荐模块、路线规划模块、场所查询模块和游记管理模块的详细说明，可以清晰地了解系统的功能实现和模块间的协作关系。各模块的数据结构设计确保了数据的完整性和一致性。
+
+\end{document}

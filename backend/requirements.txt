@@ -1,0 +1,10 @@
+diffusers==0.28.1
+Flask==3.0.3
+Flask_Cors==4.0.1
+flask_sqlalchemy==3.1.1
+huggingface_hub==0.23.2
+networkx==3.3
+safetensors==0.4.3
+scikit_learn==1.5.0
+torch==2.3.0
+Werkzeug==3.0.3

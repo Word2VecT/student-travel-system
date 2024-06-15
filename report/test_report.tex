@@ -1,0 +1,164 @@
+\documentclass{ctexart}
+\usepackage{geometry}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{booktabs}
+\usepackage{float}
+
+\title{学生游学系统 \\ 测试报告}
+\author{队长：唐梓楠\ 2022211404 \\ 成员：马伟昊\ 2022211401 \\ 张付\ 2022211396}
+\date{\today}
+
+\hypersetup{colorlinks=true,linkcolor=black,filecolor=magenta,urlcolor=cyan}
+
+\begin{document}
+
+\maketitle
+
+\tableofcontents
+
+\newpage
+
+\section{引言}
+本测试报告详细描述了学生游学系统的各个模块测试，包括用户管理模块、景点推荐模块、路线规划模块、场所查询模块和游记管理模块。报告内容涵盖了测试环境、测试用例、测试方法和测试结果分析。
+
+\section{测试环境}
+\subsection{硬件环境}
+\begin{itemize}
+    \item 处理器：Apple M3
+    \item 内存：16GB
+    \item 硬盘：1T APPLE SSD AP1024Z
+    \item 网络：校园网 \verb|BUPT-portal|
+\end{itemize}
+
+\subsection{软件环境}
+\begin{itemize}
+    \item 操作系统：macOS Sonoma \verb|14.5(23F79)|
+    \item 开发环境：Visual Studio Code \verb|1.90.0|
+    \item 浏览器：Safari Technology Preview \verb|Release 196|
+    \item 前端 JavaScript 框架: Vue.js 3.4.0
+    \item 前端 UI 组件框架: Vuetify 3.5.0
+    \item 其他主要前端组件: wangEditor, 高德地图 JS API 2.0/ Web API
+    \item 后端编程语言: Python 3.12.3
+    \item 后端 Web 应用框架: Flask 3.0.3
+    \item 数据库: MySQL 8.3.0
+\end{itemize}
+
+\section{测试用例}
+
+\subsection{用户管理模块测试}
+\begin{table}[H]
+    \centering
+    \caption{用户管理模块测试用例}
+    \begin{tabular}{|c|c|c|c|c|}
+        \hline
+        \textbf{用例编号} & \textbf{测试项目} & \textbf{测试步骤} & \textbf{预期结果}   & \textbf{实际结果} \\
+        \hline
+        UM-001        & 用户注册          & 输入有效的用户名和密码   & 注册成功            & 符合预期          \\
+        \hline
+        UM-002        & 用户注册          & 输入已存在的用户名     & 注册失败，提示用户名已存在   & 符合预期          \\
+        \hline
+        UM-003        & 用户登录          & 输入正确的用户名和密码   & 登录成功            & 符合预期          \\
+        \hline
+        UM-004        & 用户登录          & 输入错误的用户名或密码   & 登录失败，提示用户名或密码错误 & 符合预期          \\
+        \hline
+    \end{tabular}
+\end{table}
+
+\subsection{景点推荐模块测试}
+\begin{table}[H]
+    \centering
+    \caption{景点推荐模块测试用例}
+    \begin{tabular}{|c|c|c|c|c|}
+        \hline
+        \textbf{用例编号} & \textbf{测试项目} & \textbf{测试步骤} & \textbf{预期结果} & \textbf{实际结果} \\
+        \hline
+        RM-001        & 景点推荐          & 根据用户偏好推荐景点    & 推荐合适的景点       & 符合预期          \\
+        \hline
+        RM-002        & 景点搜索          & 输入景点名称进行搜索    & 显示匹配的景点       & 符合预期          \\
+        \hline
+        RM-003        & 分类筛选          & 根据类别筛选景点      & 显示对应类别的景点     & 符合预期          \\
+        \hline
+        RM-004        & 地区筛选          & 根据地区筛选景点      & 显示对应地区的景点     & 符合预期          \\
+        \hline
+    \end{tabular}
+\end{table}
+
+\subsection{路线规划模块测试}
+\begin{table}[H]
+    \centering
+    \caption{路线规划模块测试用例}
+    \begin{tabular}{|c|c|c|c|c|}
+        \hline
+        \textbf{用例编号} & \textbf{测试项目} & \textbf{测试步骤} & \textbf{预期结果}   & \textbf{实际结果} \\
+        \hline
+        PM-001        & 单目标路线规划       & 选择单个目标地点      & 规划最优路线          & 符合预期          \\
+        \hline
+        PM-002        & 多目标路线规划       & 选择多个目标地点      & 规划覆盖所有目标地点的最优路线 & 符合预期          \\
+        \hline
+        PM-003        & 出行方式选择        & 选择步行方式        & 规划步行路线          & 符合预期          \\
+        \hline
+        PM-004        & 出行方式选择        & 选择骑行方式        & 规划骑行路线          & 符合预期          \\
+        \hline
+    \end{tabular}
+\end{table}
+
+\subsection{场所查询模块测试}
+\begin{table}[H]
+    \centering
+    \caption{场所查询模块测试用例}
+    \begin{tabular}{|c|c|c|c|c|}
+        \hline
+        \textbf{用例编号} & \textbf{测试项目} & \textbf{测试步骤} & \textbf{预期结果} & \textbf{实际结果} \\
+        \hline
+        FQ-001        & 设施查询          & 输入设施名称进行查询    & 显示匹配的设施       & 符合预期          \\
+        \hline
+        FQ-002        & 设施排序          & 根据距离排序设施      & 显示按距离排序的设施    & 符合预期          \\
+        \hline
+        FQ-003        & 设施详情          & 查看设施详细信息      & 显示设施的详细信息     & 符合预期          \\
+        \hline
+        FQ-004        & 设施导航          & 导航到选定的设施      & 显示导航路线        & 符合预期          \\
+        \hline
+    \end{tabular}
+\end{table}
+
+\subsection{游记管理模块测试}
+\begin{table}[H]
+    \centering
+    \caption{游记管理模块测试用例}
+    \begin{tabular}{|c|c|c|c|c|}
+        \hline
+        \textbf{用例编号} & \textbf{测试项目} & \textbf{测试步骤} & \textbf{预期结果} & \textbf{实际结果} \\
+        \hline
+        DM-001        & 游记撰写          & 撰写并发布游记       & 游记发布成功        & 符合预期          \\
+        \hline
+        DM-002        & 游记浏览          & 浏览其他用户的游记     & 显示游记内容        & 符合预期          \\
+        \hline
+        DM-003        & 游记评分          & 对游记进行评分       & 评分记录成功        & 符合预期          \\
+        \hline
+        DM-004        & 游记推荐          & 根据热度和评分推荐游记   & 显示推荐的游记       & 符合预期          \\
+        \hline
+    \end{tabular}
+\end{table}
+
+\section{测试方法}
+本系统采用黑盒测试和白盒测试相结合的方法进行测试。
+\begin{itemize}
+    \item \textbf{黑盒测试}：根据功能需求编写测试用例，测试系统的各个功能模块是否符合预期。
+    \item \textbf{白盒测试}：通过代码审查和单元测试，确保系统内部逻辑的正确性和代码的高质量。
+\end{itemize}
+
+\section{测试结果分析}
+通过对各个模块的测试，所有功能均符合预期，系统运行稳定，满足设计需求。具体测试结果分析如下：
+\begin{itemize}
+    \item 用户管理模块：测试用例全部通过，用户注册、登录和权限管理功能正常。
+    \item 景点推荐模块：测试用例全部通过，景点推荐、搜索和分类筛选功能正常。
+    \item 路线规划模块：测试用例全部通过，单目标和多目标路线规划以及出行方式选择功能正常。
+    \item 场所查询模块：测试用例全部通过，设施查询、排序、详情和导航功能正常。
+    \item 游记管理模块：测试用例全部通过，游记撰写、浏览、评分和推荐功能正常。
+\end{itemize}
+
+\section{总结}
+本测试报告详细描述了学生游学系统的各个模块测试情况，通过对用户管理模块、景点推荐模块、路线规划模块、场所查询模块和游记管理模块的全面测试，验证了系统的功能和性能，确保系统的稳定性和可靠性。
+
+\end{document}
